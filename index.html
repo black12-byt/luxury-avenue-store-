@@ -545,10 +545,10 @@
     if (e.target === box) box.classList.remove("open");
   });
 
-  async function showSession() {
+  async function showSession() 
     const { data } = await client.auth.getSession();
     const user = data.session?.user;
-    if (user) {
+    if (user) 
       status.textContent = "Signed in as " + user.email;
       signout.hidden = false;
     } else {
