@@ -522,6 +522,7 @@
   const registerForm = document.getElementById("la-register-form");
   const loginForm = document.getElementById("la-login-form");
   const signout = document.getElementById("la-signout");
+  document.getElementById("la-account-open").onclick = () => box.classList.add("open");
 
   if (!window.supabase || !window.LUXURY_SUPABASE_URL ||
       !window.LUXURY_SUPABASE_PUBLISHABLE_KEY) {
