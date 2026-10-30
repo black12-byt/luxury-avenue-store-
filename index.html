@@ -501,4 +501,113 @@
       accountMessage.textContent = "Creating your account...";
 
       const fullName = document.getElementById("la-name").value.trim();
-      const phone = document.getElementBy
+      document.getElementById("la-phone").value.trim();
+      const email = document.getElementById("la-register-email").value.trim();
+      const password = document.getElementById("la-register-password").value;
+
+      const {data,error} = await authClient.auth.signUp({
+        email,
+        password,
+        options:{
+          emailRedirectTo:"https://black12-byt.github.io/luxury-avenue-store-/",
+          data:{
+            full_name:fullName,
+            phone
+          }
+        }
+      });
+
+      if (error) {
+        accountMessage.textContent = error.message;
+        return;
+      }
+
+      if (data.session && data.user) {
+        const {error:profileError} = await authClient
+          .from("luxury_profiles")
+          .upsert({
+            id:data.user.id,
+            full_name:fullName,
+            phone
+          });
+
+        if (profileError) {
+          accountMessage.textContent =
+            "Your account was created, but profile saving failed: " + profileError.message;
+          return;
+        }
+
+        accountMessage.textContent = "Your account has been created successfully.";
+      } else {
+        accountMessage.textContent =
+          "Registration received. Check your email to confirm your account, then sign in.";
+      }
+
+      await refreshAccount();
+    });
+
+    loginForm.addEventListener("submit",async event => {
+      event.preventDefault();
+
+      if (!authClient) {
+        accountMessage.textContent = "Account service is not configured.";
+        return;
+      }
+
+      accountMessage.textContent = "Signing in...";
+
+      const email = document.getElementById("la-login-email").value.trim();
+      const password = document.getElementById("la-login-password").value;
+
+      const {data,error} = await authClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        accountMessage.textContent = error.message;
+        return;
+      }
+
+      const user = data.user;
+
+      const {error:profileError} = await authClient
+        .from("luxury_profiles")
+        .upsert({
+          id:user.id,
+          full_name:user.user_metadata?.full_name || "",
+          phone:user.user_metadata?.phone || ""
+        });
+
+      if (profileError) {
+        accountMessage.textContent = "Signed in, but profile saving failed: " + profileError.message;
+        await refreshAccount();
+        return;
+      }
+
+      accountMessage.textContent = "You are signed in successfully.";
+      await refreshAccount();
+    });
+
+    signoutButton.addEventListener("click",async () => {
+      if (!authClient) return;
+
+      const {error} = await authClient.auth.signOut();
+
+      accountMessage.textContent =
+        error ? error.message : "You have signed out.";
+
+      await refreshAccount();
+    });
+
+    if (authClient) {
+      authClient.auth.onAuthStateChange(() => {
+        refreshAccount();
+      });
+    }
+
+    refreshAccount();
+  })();
+  </script>
+</body>
+</html>
