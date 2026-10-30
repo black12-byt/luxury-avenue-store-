@@ -1,1 +1,175 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+<title>Luxury Avenue Store | Fashion & Style</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#fff;color:#171717}
+header{background:#111;color:#fff;padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo{font-family:Georgia,serif;color:#d4b16a;font-size:23px;font-weight:bold}
+nav a{color:white;text-decoration:none;margin-left:18px;font-size:13px}
+.hero{min-height:470px;background:linear-gradient(90deg,rgba(0,0,0,.8),rgba(0,0,0,.1)),url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1400') center/cover;display:flex;align-items:center;padding:45px 8%;color:white}
+.hero h1{font-family:Georgia,serif;font-size:48px;max-width:550px;margin-bottom:15px}
+.hero p{line-height:1.8;margin-bottom:25px}
+.btn{display:inline-block;background:#c6a15b;color:#111;border:0;padding:13px 22px;text-decoration:none;font-weight:bold;cursor:pointer}
+section{padding:55px 6%}
+.heading{text-align:center;margin-bottom:30px}
+.heading h2{font-family:Georgia,serif;font-size:30px}
+.heading p{color:#777;margin-top:9px}
+.categories{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.category{height:180px;display:flex;align-items:end;padding:20px;color:white;font-size:20px;font-weight:bold;background-size:cover;background-position:center}
+.category:nth-child(1){background-image:linear-gradient(transparent,#0009),url('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600')}
+.category:nth-child(2){background-image:linear-gradient(transparent,#0009),url('https://images.unsplash.com/photo-1516826957135-700dedea698c?w=600')}
+.category:nth-child(3){background-image:linear-gradient(transparent,#0009),url('https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600')}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.product{border:1px solid #eee;padding-bottom:15px}
+.product img{width:100%;height:220px;object-fit:cover}
+.product h3{font-size:15px;margin:12px}
+.product p{color:#a17c39;margin:0 12px 12px;font-weight:bold}
+.product button{margin:0 12px;width:calc(100% - 24px)}
+.cart-panel{background:#f7f5f0;padding:25px;margin-top:20px}
+.cart-item{padding:10px 0;border-bottom:1px solid #ddd}
+.cart-item button{margin-left:10px}
+input,select{padding:12px;border:1px solid #ccc;width:100%;margin:7px 0}
+footer{background:#111;color:white;text-align:center;padding:35px 15px;line-height:2}
+footer span{color:#d4b16a}
+@media(max-width:700px){
+header{padding:15px 4%}
+nav a{margin-left:9px;font-size:11px}
+.logo{font-size:18px}
+.hero{min-height:390px}
+.hero h1{font-size:36px}
+.categories{grid-template-columns:1fr}
+.category{height:150px}
+.products{grid-template-columns:repeat(2,1fr);gap:12px}
+.product img{height:175px}
+section{padding:40px 4%}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">LUXURY AVENUE</div>
+<nav>
+<a href="#home">Home</a>
+<a href="#shop">Shop</a>
+<a href="#cart">Cart 🛒</a>
+<a href="#account">Account</a>
+</nav>
+</header>
+
+<div class="hero" id="home">
+<div>
+<h1>Discover Your Signature Style</h1>
+<p>Elevate your wardrobe with exceptional fashion.<br>Discover quality, elegance and confidence.</p>
+<a href="#shop" class="btn">SHOP COLLECTION</a>
+</div>
+</div>
+
+<section>
+<div class="heading">
+<h2>Explore Categories</h2>
+<p>Find your perfect look</p>
+</div>
+<div class="categories">
+<div class="category">Women's Fashion</div>
+<div class="category">Men's Fashion</div>
+<div class="category">Shoes & Accessories</div>
+</div>
+</section>
+
+<section id="shop">
+<div class="heading">
+<h2>Our Collection</h2>
+<p>Explore our latest fashion collection</p>
+</div>
+<input id="search" placeholder="Search for clothes..." oninput="renderProducts()">
+<div class="products" id="products"></div>
+</section>
+
+<section id="cart">
+<div class="heading">
+<h2>Your Shopping Cart</h2>
+<p>Review your selected items</p>
+</div>
+<div class="cart-panel">
+<div id="cartItems">Your cart is empty.</div>
+<h3 id="total" style="margin:20px 0">Total: ₦0</h3>
+<button class="btn" onclick="checkout()">ORDER ON WHATSAPP</button>
+</div>
+</section>
+
+<section id="account">
+<div class="heading">
+<h2>Customer Account</h2>
+<p>Customer registration and login will be connected to Supabase in the next stage.</p>
+</div>
+<p style="text-align:center">Create an account to manage your orders and shopping experience.</p>
+</section>
+
+<footer>
+<h2><span>LUXURY AVENUE STORE</span></h2>
+<p>Fashion • Elegance • Confidence</p>
+<p>© 2026 Luxury Avenue Store. All rights reserved.</p>
+</footer>
+
+<script>
+const products=[
+{id:1,name:"Elegant Women's Dress",price:25000,image:"https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=500"},
+{id:2,name:"Classic Men's Outfit",price:30000,image:"https://images.unsplash.com/photo-1617137968427-85924c800a22?w=500"},
+{id:3,name:"Luxury Handbag",price:18000,image:"https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500"},
+{id:4,name:"Stylish Sneakers",price:22000,image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"},
+{id:5,name:"Fashion Jacket",price:35000,image:"https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500"},
+{id:6,name:"Elegant Heels",price:27000,image:"https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500"},
+{id:7,name:"Casual Men's Shirt",price:15000,image:"https://images.unsplash.com/photo-1603252109303-2751441dd157?w=500"},
+{id:8,name:"Women's Fashion Set",price:32000,image:"https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500"}
+];
+let cart=[];
+function renderProducts(){
+const term=document.getElementById("search").value.toLowerCase();
+document.getElementById("products").innerHTML=products.filter(p=>p.name.toLowerCase().includes(term)).map(p=>`
+<div class="product">
+<img src="${p.image}" alt="${p.name}">
+<h3>${p.name}</h3>
+<p>₦${p.price.toLocaleString()}</p>
+<button class="btn" onclick="addToCart(${p.id})">ADD TO CART</button>
+</div>`).join("");
+}
+function addToCart(id){
+const p=products.find(x=>x.id===id);
+const item=cart.find(x=>x.id===id);
+if(item)item.qty++;
+else cart.push({...p,qty:1});
+renderCart();
+alert("Product added to cart!");
+}
+function renderCart(){
+document.getElementById("cartItems").innerHTML=cart.length?cart.map(p=>`
+<div class="cart-item">${p.name} × ${p.qty} — ₦${(p.price*p.qty).toLocaleString()}
+<button onclick="removeItem(${p.id})">Remove</button>
+</div>`).join(""):"Your cart is empty.";
+document.getElementById("total").textContent="Total: ₦"+cart.reduce((s,p)=>s+p.price*p.qty,0).toLocaleString();
+}
+function removeItem(id){
+cart=cart.filter(p=>p.id!==id);
+renderCart();
+}
+function checkout(){
+if(!cart.length){alert("Your cart is empty!");return;}
+const phone="2348000000000";
+const lines=cart.map(p=>p.name+" x "+p.qty+" = ₦"+(p.price*p.qty).toLocaleString()).join("\n");
+const total=cart.reduce((s,p)=>s+p.price*p.qty,0);
+const msg="Hello Luxury Avenue Store! I want to order:\n"+lines+"\nTotal: ₦"+total.toLocaleString();
+window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg),"_blank");
+}
+renderProducts();
+renderCart();
+</script>
+</body>
+  </html>
+  
