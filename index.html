@@ -515,6 +515,7 @@
 </div>
 
 <script>
+
 (() => {
   const box = document.getElementById("la-account-box");
   const message = document.getElementById("la-account-message");
@@ -522,7 +523,15 @@
   const registerForm = document.getElementById("la-register-form");
   const loginForm = document.getElementById("la-login-form");
   const signout = document.getElementById("la-signout");
-  document.getElementById("la-account-open").onclick = () => box.classList.add("open");
+  const openButton = document.getElementById("la-account-open");
+  const closeButton = document.getElementById("la-account-close");
+
+  openButton.onclick = () => box.classList.add("open");
+  closeButton.onclick = () => box.classList.remove("open");
+
+  box.addEventListener("click", event => {
+    if (event.target === box) box.classList.remove("open");
+  });
 
   if (!window.supabase || !window.LUXURY_SUPABASE_URL ||
       !window.LUXURY_SUPABASE_PUBLISHABLE_KEY) {
@@ -535,55 +544,46 @@
     window.LUXURY_SUPABASE_PUBLISHABLE_KEY
   );
 
-  document.getElementById("la-account-open").onclick = async () => {
-    box.classList.add("open");
-    await showSession();
-  };
-  document.getElementById("la-account-close").onclick =
-    () => box.classList.remove("open");
-  box.addEventListener("click", e => {
-    if (e.target === box) box.classList.remove("open");
-  });
+  async function showSession() {
+    const { data, error } = await client.auth.getSession();
 
-  async function showSession() 
-    const { data } = await client.auth.getSession();
+    if (error) {
+      message.textContent = error.message;
+      return;
+    }
+
     const user = data.session?.user;
-    if (user) 
+
+    if (user) {
       status.textContent = "Signed in as " + user.email;
       signout.hidden = false;
+      registerForm.hidden = true;
+      loginForm.hidden = true;
     } else {
       status.textContent = "Sign in or create your account.";
       signout.hidden = true;
+      registerForm.hidden = false;
+      loginForm.hidden = false;
     }
   }
 
-  registerForm.addEventListener("submit", async e => {
-    e.preventDefault();
+  registerForm.addEventListener("submit", async event => {
+    event.preventDefault();
     message.textContent = "Creating your account...";
+
     const name = document.getElementById("la-name").value.trim();
     const phone = document.getElementById("la-phone").value.trim();
     const email = document.getElementById("la-register-email").value.trim();
     const password = document.getElementById("la-register-password").value;
 
-    
-
-const { data, error } = await client.auth.signUp({
-  email,
-  password,
-  options: {
-    emailRedirectTo: "https://black12-byt.github.io/luxury-avenue-store-/",
-    data: { full_name: name, phone }
-  }
-});
-
-  
-options: {
-  emailRedirectTo: "https://black12-byt.github.io/luxury-avenue-store-/",
-  data: { full_name: name, phone }
-}
-
-  }
-});
+    const { data, error } = await client.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: "https://black12-byt.github.io/luxury-avenue-store-/",
+        data: { full_name: name, phone: phone }
+      }
+    });
 
     if (error) {
       message.textContent = error.message;
@@ -594,27 +594,30 @@ options: {
       const { error: profileError } = await client
         .from("luxury_profiles")
         .upsert({ id: data.user.id, full_name: name, phone });
+
       if (profileError) {
-        message.textContent = "Account created, but profile saving failed: " +
-          profileError.message;
+        message.textContent = "Account created, but profile saving failed: " + profileError.message;
         return;
       }
+
       message.textContent = "Account created successfully.";
     } else {
-      message.textContent =
-        "Registration received. Check your email to confirm your account, then sign in.";
+      message.textContent = "Registration received. Check your email to confirm your account, then sign in.";
     }
+
     await showSession();
   });
 
-  loginForm.addEventListener("submit", async e => {
-    e.preventDefault();
+  loginForm.addEventListener("submit", async event => {
+    event.preventDefault();
     message.textContent = "Signing in...";
+
     const email = document.getElementById("la-login-email").value.trim();
     const password = document.getElementById("la-login-password").value;
 
     const { data, error } = await client.auth.signInWithPassword({
-      email, password
+      email,
+      password
     });
 
     if (error) {
@@ -623,6 +626,7 @@ options: {
     }
 
     const user = data.user;
+
     const { error: profileError } = await client
       .from("luxury_profiles")
       .upsert({
@@ -632,8 +636,7 @@ options: {
       });
 
     if (profileError) {
-      message.textContent =
-        "Signed in, but profile saving failed: " + profileError.message;
+      message.textContent = "Signed in, but profile saving failed: " + profileError.message;
       await showSession();
       return;
     }
@@ -648,10 +651,9 @@ options: {
     await showSession();
   };
 
-  client.auth.onAuthStateChange(() => {
-    showSession();
-  });
+  showSession();
 })();
+
 </script>
 
 </body>
